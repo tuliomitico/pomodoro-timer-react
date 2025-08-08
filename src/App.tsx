@@ -6,11 +6,11 @@ import { GlobalStyle } from "./styles/global";
 export function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Button variant="primary"/>
-      <Button variant="secondary"/>
-      <Button variant="danger"/>
-      <Button variant="neutral"/>
-      <Button/>
+      <Button variant="primary" />
+      <Button variant="secondary" />
+      <Button variant="danger" />
+      <Button variant="neutral" />
+      <Button />
       <GlobalStyle />
     </ThemeProvider>
   );
