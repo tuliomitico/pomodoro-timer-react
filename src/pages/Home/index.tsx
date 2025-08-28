@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +36,7 @@ export function Home() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null);
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0);
+  const interval = useRef<number>(undefined);
 
   const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
@@ -49,13 +50,14 @@ export function Home() {
 
   useEffect(() => {
     if (activeCycle) {
-      setInterval(() => {
+      interval.current = setInterval(() => {
         setAmountSecondsPassed(
           differenceInSeconds(new Date(), activeCycle?.startDate),
         );
       });
     }
-  }, [activeCycle, activeCycleId]);
+    return () => clearInterval(interval.current);
+  }, [activeCycle]);
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     const id = new Date().getTime().toString();
@@ -68,6 +70,7 @@ export function Home() {
 
     setCycles((state) => [...state, newCycle]);
     setActiveCycleId(id);
+    setAmountSecondsPassed(0);
 
     reset();
   }
@@ -80,6 +83,12 @@ export function Home() {
 
   const minutes = String(minutesAmount).padStart(2, "0");
   const seconds = String(secondsAmount).padStart(2, "0");
+
+  useEffect(() => {
+    if (activeCycle) {
+      document.title = `${minutes}:${seconds}`;
+    }
+  }, [minutes, seconds, activeCycle]);
 
   const task = watch("task");
   const isSubmitDisabled = !task;
