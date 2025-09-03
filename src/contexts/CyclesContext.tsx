@@ -1,9 +1,11 @@
 import { createContext, useReducer, useState } from "react";
+import { cyclesReducer, type Cycle } from "../reducers/cycles/reducer";
 import {
   CyclesActionTypes,
-  cyclesReducer,
-  type Cycle,
-} from "../reducers/cycles";
+  addNewCycleAction,
+  interruptCurrentCycleAction,
+  markCurrentCycleAsFinishedAction,
+} from "../reducers/cycles/actions";
 
 interface CreateCycleData {
   task: string;
@@ -44,12 +46,7 @@ export function CyclesContextProvider({
   }
 
   function markCurrentCycleAsFinished() {
-    dispatch({
-      type: CyclesActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED,
-      payload: {
-        activeCycleId,
-      },
-    });
+    dispatch(markCurrentCycleAsFinishedAction());
   }
 
   function createNewCycle(data: CreateCycleData) {
@@ -62,23 +59,13 @@ export function CyclesContextProvider({
       startDate: new Date(),
     };
 
-    dispatch({
-      type: CyclesActionTypes.ADD_NEW_CYCLE,
-      payload: {
-        newCycle,
-      },
-    });
+    dispatch(addNewCycleAction(newCycle));
 
     setAmountSecondsPassed(0);
   }
 
   function interruptCurrentCycle() {
-    dispatch({
-      type: CyclesActionTypes["INTERRUPT_CURRENT_CYCLE"],
-      payload: {
-        activeCycleId,
-      },
-    });
+    dispatch(interruptCurrentCycleAction());
 
     document.title = "Ignite Timer";
   }

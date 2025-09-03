@@ -1,3 +1,5 @@
+import { CyclesActionTypes } from "./actions";
+
 export interface Cycle {
   id: string;
   task: string;
@@ -13,29 +15,16 @@ interface CyclesState {
 
 type ActionProps =
   | {
-      type: "ADD_NEW_CYCLE";
+      type: CyclesActionTypes.ADD_NEW_CYCLE;
       payload: {
         newCycle: Cycle;
       };
     }
   | {
-      type: "INTERRUPT_CURRENT_CYCLE";
-      payload: {
-        activeCycleId: string | null;
-      };
-    }
-  | {
-      type: "MARK_CURRENT_CYCLE_AS_FINISHED";
-      payload: {
-        activeCycleId: string | null;
-      };
+      type:
+        | CyclesActionTypes.INTERRUPT_CURRENT_CYCLE
+        | CyclesActionTypes.MARK_CURRENT_CYCLE_AS_FINISHED;
     };
-
-export enum CyclesActionTypes {
-  ADD_NEW_CYCLE = "ADD_NEW_CYCLE",
-  INTERRUPT_CURRENT_CYCLE = "INTERRUPT_CURRENT_CYCLE",
-  MARK_CURRENT_CYCLE_AS_FINISHED = "MARK_CURRENT_CYCLE_AS_FINISHED",
-}
 
 export function cyclesReducer(state: CyclesState, action: ActionProps) {
   switch (action.type) {
@@ -49,7 +38,7 @@ export function cyclesReducer(state: CyclesState, action: ActionProps) {
       return {
         ...state,
         cycles: state.cycles.map((cycle) => {
-          if (cycle.id === action.payload.activeCycleId) {
+          if (cycle.id === state.activeCycleId) {
             return { ...cycle, interruptedDate: new Date() };
           } else {
             return cycle;
@@ -62,7 +51,7 @@ export function cyclesReducer(state: CyclesState, action: ActionProps) {
       return {
         ...state,
         cycles: state.cycles.map((cycle) => {
-          if (cycle.id === action.payload.activeCycleId) {
+          if (cycle.id === state.activeCycleId) {
             return { ...cycle, finishedDate: new Date() };
           } else {
             return cycle;
